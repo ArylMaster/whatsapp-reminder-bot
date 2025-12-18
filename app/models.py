@@ -1,13 +1,26 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
-from .db import Base
-import datetime
+from sqlalchemy import Column, Integer, String, DateTime, Text
+from sqlalchemy.orm import declarative_base
+from datetime import datetime
+
+Base = declarative_base()
+
 
 class Reminder(Base):
     __tablename__ = "reminders"
 
     id = Column(Integer, primary_key=True, index=True)
-    phone = Column(String, index=True)      # e.g. "whatsapp:+91..."
-    message = Column(String)
-    when = Column(DateTime)                 # UTC datetime when to send
-    sent = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    phone_number = Column(String, nullable=False)
+    message = Column(Text, nullable=False)
+    run_at_utc = Column(DateTime, nullable=False)
+    created_at_utc = Column(DateTime, default=datetime.utcnow)
+
+
+class ReminderEvent(Base):
+    __tablename__ = "reminder_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    reminder_id = Column(Integer, nullable=True)
+    phone_number = Column(String, nullable=False)
+    event_type = Column(String, nullable=False)
+    event_time_utc = Column(DateTime, default=datetime.utcnow)
+    details = Column(Text, nullable=True)
